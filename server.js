@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -8,6 +9,7 @@ const {
   send_message,
   getChannel,
   getUsersByChannel,
+  authenticate,
 } = require("./controllers");
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -15,13 +17,15 @@ app.use(bodyParser.json());
 app.use(cors());
 
 //Routes
-app.get("/channels", getChannels);
+app.post("/pusher/auth", authenticate);
 
-app.get("/channels:channel_name", getChannel);
+app.get("/channels/:channel_name", getChannel);
 
-app.get("/users:channel_name", getUsersByChannel);
+app.get("/users/:channel_name", getUsersByChannel);
 
-app.post("/message", send_message);
+app.post("/send-message", send_message);
+
+app.get("/channels/", getChannels);
 
 // Live Server
 const PORT = 3001;
