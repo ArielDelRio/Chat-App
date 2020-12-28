@@ -38,7 +38,7 @@ class App extends Component {
 
   //subscribe user
   async handleSubmit(username) {
-    const pusher = new Pusher("73921353a707b3172863", {
+    const pusher = new Pusher("3aa36f0535ce0a0c6f05", {
       cluster: "us2",
       authEndpoint: "http://localhost:3001/pusher/auth",
       auth: { params: { username: username } },

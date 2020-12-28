@@ -1,65 +1,44 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+
 import MessageList from "./MessageList.component";
+import SendMessageForm from "./SendMessageForm.component";
 
 const ChatScreen = ({ channel }) => {
-  // console.log(channel);
-
-  const [messages, setmessages] = useState([]);
   const [chatInfo, setchatInfo] = useState({
     user: channel.members.me,
-    members: Object.values(channel.members.members),
+    members: channel.members.members,
     count: channel.members.count,
+    messages: [],
   });
 
   useEffect(() => {
-    // axios
-    //   .post(
-    //     "http://localhost:3001/send-message",
-    //     JSON.stringify({
-    //       senderId: chatInfo.user.id,
-    //       text: `Hello from ${chatInfo.user.info.name}`,
-    //     })
-    //   )
-    //   .then((res) => {
-    //     console.log(res);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
+    //   // channel.bind_global((eventname, data) => {
+    //   //   console.log(`Event name: ${eventname}`);
+    //   //   console.log(`Event data: ${data}`);
+    //   //   console.log(chatInfo);
+    //   // });
 
-    channel.bind_global((eventname, data) => {
-      console.log(`Event name: ${eventname}`);
-      console.log(`Event data: ${data}`);
-    });
+    channel.bind("get-message", function (data) {
+      console.log("message_added");
+      const newMessage = { senderId: data.senderId, text: data.text };
 
-    //recive message
-    // channel.bind("client-msg", function (data, metadata) {
-    //   console.log(
-    //     "I received",
-    //     data,
-    //     "from user",
-    //     metadata.user_id,
-    //     "with user info",
-    //     channel.members.get(metadata.user_id).info
-    //   );
-    // });
-
-    //some bind recive all messages
-    //and update messages list
-
-    channel.bind("get-message", (data) => {
-      const message = data;
-      setmessages([...messages, message]);
+      setchatInfo((chatInfo) => ({
+        ...chatInfo,
+        count: chatInfo.count,
+        messages: [...chatInfo.messages, newMessage],
+      }));
     });
 
     channel.bind("pusher:member_added", function (member) {
       console.log("member_added");
-      const memberInfo = member.info;
-      setchatInfo({
+
+      const newMember = { [member.id]: member.info };
+
+      setchatInfo((chatInfo) => ({
         ...chatInfo,
-        members: [...chatInfo.members, memberInfo],
-      });
+        count: chatInfo.count + 1,
+        members: { ...chatInfo.members, ...newMember },
+      }));
     });
   }, []);
 
@@ -70,12 +49,14 @@ const ChatScreen = ({ channel }) => {
       <div>Count users online :{chatInfo.count}</div>
       <div>
         Members:
-        {chatInfo.members.map((member) => (
+        {Object.values(chatInfo.members).map((member) => (
           <li key={member.user_id}>{member.name}</li>
         ))}
       </div>
 
-      <MessageList messages={messages} />
+      <MessageList messages={chatInfo.messages} members={chatInfo.members} />
+
+      <SendMessageForm user={chatInfo.user} />
     </div>
   );
 };

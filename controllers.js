@@ -8,6 +8,14 @@ const pusher = new Pusher({
   useTLS: true,
 });
 
+module.exports.test = async (req, res) => {
+  console.log("test");
+  await pusher
+    .trigger("presence-main", "get-message", { message: "hello world" })
+    .then((response) => res.send(response))
+    .catch((error) => console.log(error));
+};
+
 module.exports.authenticate = (req, res) => {
   console.log("authentication in progress..");
   const socketId = req.body.socket_id;
@@ -39,17 +47,14 @@ module.exports.getChannel = (req, res) => {
   res.send(channel);
 };
 
-// route: /message
+// route: /send-message
 module.exports.send_message = (req, res) => {
   const payload = req.body;
   console.log(payload);
   pusher
-    .trigger("presence-main", "get-message", {
-      senderId: payload.senderId,
-      message: `Hello ${payload.text}`,
-    })
-    .then((value) => {
-      console.log(value);
+    .trigger("presence-main", "get-message", payload)
+    .then((response) => {
+      console.log(response);
     })
     .catch((error) => {
       console.log(error);
@@ -67,7 +72,9 @@ module.exports.getUsersByChannel = (req, res) => {
 
 const get_channels = async () => {
   try {
-    const res = await pusher.get({ path: "/channels" });
+    const res = await pusher.get({
+      path: "/channels",
+    });
     if (res.status === 200) {
       const body = await res.json();
       const channelsInfo = body.channels;
@@ -81,7 +88,9 @@ const get_channels = async () => {
 
 const get_channel = async (channel_name) => {
   try {
-    const res = await pusher.get({ path: `/channels/${channel_name}` });
+    const res = await pusher.get({
+      path: `/channels/${channel_name}`,
+    });
     if (res.status === 200) {
       const body = await res.json();
       const channelInfo = body.channels;

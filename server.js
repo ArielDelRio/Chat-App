@@ -10,9 +10,14 @@ const {
   getChannel,
   getUsersByChannel,
   authenticate,
+  test,
 } = require("./controllers");
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -26,6 +31,8 @@ app.get("/users/:channel_name", getUsersByChannel);
 app.post("/send-message", send_message);
 
 app.get("/channels/", getChannels);
+
+app.get("/test", test);
 
 // Live Server
 const PORT = 3001;
