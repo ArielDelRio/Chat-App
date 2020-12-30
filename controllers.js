@@ -9,11 +9,7 @@ const pusher = new Pusher({
 });
 
 module.exports.test = async (req, res) => {
-  console.log("test");
-  await pusher
-    .trigger("presence-main", "get-message", { message: "hello world" })
-    .then((response) => res.send(response))
-    .catch((error) => console.log(error));
+  res.send("hello friend");
 };
 
 module.exports.authenticate = (req, res) => {
@@ -28,45 +24,45 @@ module.exports.authenticate = (req, res) => {
     },
   };
 
+  console.log(presenceData);
   const auth = pusher.authenticate(socketId, channel, presenceData);
   console.log(auth);
   res.send(auth);
 };
 
 // route: /channels
-module.exports.getChannels = (req, res) => {
+module.exports.getChannels = async (req, res) => {
   console.log("get_channels");
-  const channels = get_channels();
+  const channels = await get_channels();
   res.send(channels);
 };
 
 // route: /channels:channel_name
-module.exports.getChannel = (req, res) => {
+module.exports.getChannel = async (req, res) => {
   const channel_name = req.params.channel_name;
-  const channel = get_channel(channel_name);
+  const channel = await get_channel(channel_name);
   res.send(channel);
 };
 
 // route: /send-message
 module.exports.send_message = (req, res) => {
   const payload = req.body;
-  console.log(payload);
   pusher
     .trigger("presence-main", "get-message", payload)
     .then((response) => {
       console.log(response);
+      res.json(response);
     })
     .catch((error) => {
       console.log(error);
+      res.json(error);
     });
-  res.status(200);
 };
 
 // route: /users:channel_name
-module.exports.getUsersByChannel = (req, res) => {
+module.exports.getUsersByChannel = async (req, res) => {
   const channel_name = req.params.channel_name;
-  console.log(channel_name);
-  const users = get_users_by_channel(channel_name);
+  const users = await get_users_by_channel(channel_name);
   res.send(users);
 };
 
@@ -79,7 +75,7 @@ const get_channels = async () => {
       const body = await res.json();
       const channelsInfo = body.channels;
       console.log(body);
-      return body;
+      return channelsInfo;
     }
   } catch (error) {
     console.log(error);
@@ -90,11 +86,10 @@ const get_channel = async (channel_name) => {
   try {
     const res = await pusher.get({
       path: `/channels/${channel_name}`,
+      params: { info: ["user_count", "subscription_count"] },
     });
     if (res.status === 200) {
       const body = await res.json();
-      const channelInfo = body.channels;
-      // console.log(body);
       return body;
     }
   } catch (error) {
@@ -115,7 +110,6 @@ const get_users_by_channel = async (channel_name) => {
       return users;
     }
   } catch (error) {
-    console.log(`Error retriving users by chanel.`);
     console.log(error);
   }
 };

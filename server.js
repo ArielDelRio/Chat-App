@@ -26,7 +26,7 @@ app.post("/pusher/auth", authenticate);
 
 app.get("/channels/:channel_name", getChannel);
 
-app.get("/users/:channel_name", getUsersByChannel);
+app.get("/channels/:channel_name/users", getUsersByChannel);
 
 app.post("/send-message", send_message);
 
