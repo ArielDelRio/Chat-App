@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import Info from "../../components/Info.component";
+import MessageList from "../../components/MessageList.component";
 
-import MessageList from "./MessageList.component";
-import SendMessageForm from "./SendMessageForm.component";
+const message = "new user";
 
-const ChatScreen = ({ channel }) => {
+const ChatScreen = ({ children, channel }) => {
+  const [openInfo, setOpenInfo] = useState(false);
+
   const [chatInfo, setchatInfo] = useState({
     user: channel.members.me,
     members: channel.members.members,
@@ -92,31 +95,19 @@ const ChatScreen = ({ channel }) => {
     });
   }, []);
 
+  console.log(chatInfo);
   return (
-    <div>
-      <h1>ChatScreen</h1>
-      <h4>Hello {chatInfo.user.info.name}</h4>
-      <div>Count users online :{chatInfo.count}</div>
-      <div>
-        Members:
-        {Object.values(chatInfo.members).map((member) => (
-          <li
-            key={member.user_id}
-            style={{ color: member.status ? "green" : "gray" }}
-          >
-            {member.name} {member.typing ? " is typing..." : ""}
-          </li>
-        ))}
-      </div>
+    <React.Fragment>
+      {children}
+      <Info message={message} open={openInfo} setOpenInfo={setOpenInfo} />
+      <div onClick={() => setOpenInfo(true)}>openInfo</div>
 
       <MessageList
         messages={chatInfo.messages}
         members={chatInfo.members}
         user={chatInfo.user}
       />
-
-      <SendMessageForm user={chatInfo.user} channel={channel} />
-    </div>
+    </React.Fragment>
   );
 };
 
