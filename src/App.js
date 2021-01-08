@@ -100,7 +100,6 @@ class App extends Component {
 
   handleLogin(response) {
     const profileObj = response.profileObj;
-
     localStorage.setItem(
       TOKEN_SIGNED_IN,
       JSON.stringify(this.state.isSignedIn)
@@ -113,6 +112,8 @@ class App extends Component {
         params: {
           user_id: profileObj.googleId,
           username: profileObj.name,
+          givenName: profileObj.givenName,
+          imageUrl: profileObj.imageUrl,
         },
       },
     });
@@ -173,18 +174,16 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state.isSignedIn);
     return !this.state.login ? (
       this.renderLoginScreen()
     ) : (
-      <ChatScreen channel={this.state.channel}>
-        <Header
-          title={TITLE}
-          handleLogout={() => this.handleLogout()}
-          drawerItems={users}
-          handleDrawerItemClick={() => this.handleDrawerItemClick()}
-        />
-      </ChatScreen>
+      <ChatScreen
+        channel={this.state.channel}
+        title={TITLE}
+        handleLogout={() => this.handleLogout()}
+        drawerItems={users}
+        handleDrawerItemClick={() => this.handleDrawerItemClick()}
+      ></ChatScreen>
     );
   }
 }

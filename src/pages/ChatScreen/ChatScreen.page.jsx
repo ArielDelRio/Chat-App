@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
+import clsx from "clsx";
+
+import Header from "../../components/Header.component";
 import Info from "../../components/Info.component";
 import MessageList from "../../components/MessageList.component";
+import useStyles from "../ChatScreen/ChatScreen.style";
+import SendMessageForm from "../../components/SendMessageForm.component";
+import { Box } from "@material-ui/core";
 
-const message = "new user";
+const ChatScreen = ({
+  title,
+  channel,
+  handleLogout,
+  handleDrawerItemClick,
+}) => {
+  const classes = useStyles();
 
-const ChatScreen = ({ children, channel }) => {
-  const [openInfo, setOpenInfo] = useState(false);
+  const [openInfo, setOpenInfo] = useState({ open: false, message: "" });
 
   const [chatInfo, setchatInfo] = useState({
     user: channel.members.me,
@@ -13,6 +24,19 @@ const ChatScreen = ({ children, channel }) => {
     count: channel.members.count,
     messages: [],
   });
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+
+  const handleDrawerToggle = (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+
+    setIsDrawerOpen(!isDrawerOpen);
+  };
 
   const bind_global_event = () => {
     channel.bind_global((eventname, data) => {
@@ -54,9 +78,12 @@ const ChatScreen = ({ children, channel }) => {
 
   const event_pusher_member_added = (member) => {
     console.log("member_added");
-
     const newMember = { [member.id]: member.info };
 
+    setOpenInfo({
+      open: true,
+      message: `User ${member.info.name} joined`,
+    });
     setchatInfo((chatInfo) => ({
       ...chatInfo,
       count: chatInfo.count + 1,
@@ -66,11 +93,17 @@ const ChatScreen = ({ children, channel }) => {
 
   const event_pusher_member_removed = (member) => {
     console.log("member_removed");
+
+    setOpenInfo({
+      open: true,
+      message: `User ${member.info.name} left`,
+    });
+
     setchatInfo((chatInfo) => {
       const updatedMembers = { ...chatInfo.members };
 
-      // delete updatedMembers[member.id];
-      updatedMembers[member.id].status = 0;
+      delete updatedMembers[member.id];
+
       return {
         ...chatInfo,
         count: chatInfo.count - 1,
@@ -98,15 +131,34 @@ const ChatScreen = ({ children, channel }) => {
   console.log(chatInfo);
   return (
     <React.Fragment>
-      {children}
-      <Info message={message} open={openInfo} setOpenInfo={setOpenInfo} />
-      <div onClick={() => setOpenInfo(true)}>openInfo</div>
-
-      <MessageList
-        messages={chatInfo.messages}
-        members={chatInfo.members}
-        user={chatInfo.user}
+      <Header
+        title={title}
+        handleLogout={handleLogout}
+        drawerItems={chatInfo.members}
+        handleDrawerItemClick={handleDrawerItemClick}
+        handleDrawerToggle={handleDrawerToggle}
+        isDrawerOpen={isDrawerOpen}
       />
+
+      <Box
+        className={clsx(classes.content, {
+          [classes.contentShift]: isDrawerOpen,
+        })}
+      >
+        <Info
+          message={openInfo.message}
+          open={openInfo.open}
+          setOpenInfo={setOpenInfo}
+        />
+
+        <MessageList
+          messages={chatInfo.messages}
+          members={chatInfo.members}
+          user={chatInfo.user}
+        />
+
+        <SendMessageForm user={chatInfo.user} channel={channel} />
+      </Box>
     </React.Fragment>
   );
 };

@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
   },
+
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: drawerWidth,
@@ -40,28 +41,26 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.enteringScreen,
     }),
   },
+
+  drawerHeader: {
+    display: "flex",
+    alignItems: "center",
+    padding: theme.spacing(0, 1),
+    // necessary for content to be below app bar
+    ...theme.mixins.toolbar,
+    justifyContent: "flex-end",
+  },
 }));
 
 const Header = ({
   title,
   drawerItems,
+  isDrawerOpen,
   handleLogout,
   handleDrawerItemClick,
+  handleDrawerToggle,
 }) => {
   const classes = useStyles();
-
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-
-  const handleDrawerToggle = (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-
-    setIsDrawerOpen(!isDrawerOpen);
-  };
 
   return (
     <div className={classes.root}>
@@ -84,7 +83,6 @@ const Header = ({
           <Typography variant="h6" className={classes.title}>
             {title}
           </Typography>
-          {/* <Button color="inherit">Login</Button> */}
           <Logout
             handleLogout={handleLogout}
             render={(renderProps) => (
@@ -100,6 +98,7 @@ const Header = ({
           />
         </Toolbar>
       </AppBar>
+      <div className={classes.drawerHeader}></div>
 
       <Drawer
         isDrawerOpen={isDrawerOpen}

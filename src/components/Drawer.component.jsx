@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => {
     list: {
       width: 250,
       [theme.breakpoints.down("xs")]: {
-        width: "auto",
+        width: "100vw",
       },
     },
   };

@@ -16,12 +16,15 @@ module.exports.authenticate = (req, res) => {
   console.log("authentication in progress..");
   const socketId = req.body.socket_id;
   const channel = req.body.channel_name;
-  const user_id = req.body.user_id;
+
   const presenceData = {
-    user_id: user_id,
+    user_id: req.body.user_id,
     user_info: {
-      user_id: user_id,
+      user_id: req.body.user_id,
       name: req.body.username,
+      username: req.body.name,
+      givenName: req.body.givenName,
+      imageUrl: req.body.imageUrl,
     },
   };
 
@@ -88,7 +91,7 @@ const get_channel = async (channel_name) => {
     const res = await pusher.get({
       path: `/channels/${channel_name}`,
       params: {
-        info: ["user_count", "subscription_count"]
+        info: ["user_count", "subscription_count"],
       },
     });
     if (res.status === 200) {
