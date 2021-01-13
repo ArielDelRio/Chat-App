@@ -6,7 +6,6 @@ import { TOKEN_SIGNED_IN } from "./config";
 import { Login } from "./components/GoogleAuth.component";
 
 import ChatScreen from "./pages/ChatScreen/ChatScreen.page";
-import Header from "./components/Header.component";
 
 import LoginForm from "./pages/LoginForm/LoginForm.page";
 
@@ -24,49 +23,6 @@ const PUSHER_CONFIG = {
 
 const TITLE = "Chat-App";
 
-const offlineData = {
-  state: {
-    login: false,
-    user: {
-      name: "Ariel Del Rio",
-      email: "arieldelrioviamonte@gmail.com",
-      familyName: "Del Rio",
-      givenName: "Ariel",
-      googleId: "116207138867903259920",
-      imageUrl:
-        "https://lh5.googleusercontent.com/-dMMmSPO_gCc/AAAAAAAAAAI/AAAAAAAAAAA/AMZuucmcrcnRSQN8PMvpaW563QECGdj2EA/s96-c/photo.jpg",
-    },
-  },
-};
-
-const users = [
-  {
-    id: 0,
-    avatar: "/static/images/avatar/1.jpg",
-    name: "Main Channel",
-    lastMessage: "Welcome..",
-    type: "channel",
-  },
-  {
-    id: 1,
-    avatar: "/static/images/avatar/1.jpg",
-    name: "Ariel",
-    lastMessage: " I'll be in your neighborhood doing errands this…",
-  },
-  {
-    id: 2,
-    avatar: "/static/images/avatar/2.jpg",
-    name: "Arelys",
-    lastMessage: " Wish I could come, but I'm out of town this…",
-  },
-  {
-    id: 3,
-    avatar: "/static/images/avatar/3.jpg",
-    name: "Anabel",
-    lastMessage: " Do you have Paris recommendations? Have you ever…",
-  },
-];
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -74,6 +30,7 @@ class App extends Component {
       login: false,
       user: null,
       channel: null,
+      privateChannels: [],
       loading: false,
       errorMsg: "",
       isSignedIn: JSON.parse(localStorage.getItem(TOKEN_SIGNED_IN)) || false,
@@ -129,6 +86,17 @@ class App extends Component {
     channel.bind("pusher:subscription_error", (error) =>
       this.subscription_error(error)
     );
+
+    channel.bind("client-accept-private-channels", (data) => {
+      const myId = this.state.channel.members.me.id;
+
+      const privateChannelName =
+        data.user_id > myId
+          ? `presence-${data.user_id}-${myId}`
+          : `presence-${myId}-${data.user_id}`;
+
+      this.subscribeToPrivateChannel(privateChannelName);
+    });
   }
 
   handleLogout() {
@@ -155,8 +123,39 @@ class App extends Component {
     this.setState({ isSignedIn: !this.state.isSignedIn });
   }
 
-  handleDrawerItemClick() {
-    console.log("User click");
+  handleDrawerItemClick(itemData) {
+    if (
+      !itemData.user_id ||
+      itemData.user_id === this.state.channel.members.me.id
+    )
+      return;
+
+    //send invitation to join in a private chanel
+    this.state.channel.trigger("client-accept-private-channels", {
+      user_id: this.state.channel.members.me.id,
+    });
+    const myId = this.state.channel.members.me.id;
+
+    const privateChannelName =
+      myId > itemData.user_id
+        ? `presence-${myId}-${itemData.user_id}`
+        : `presence-${itemData.user_id}-${myId}`;
+
+    this.subscribeToPrivateChannel(privateChannelName);
+  }
+
+  subscribeToPrivateChannel(privateChannelName) {
+    const newPrivateChannel = this.pusher.subscribe(privateChannelName);
+
+    newPrivateChannel.bind("pusher:subscription_succeeded", () => {
+      this.setState({
+        privateChannels: [...this.state.privateChannels, newPrivateChannel],
+      });
+    });
+
+    newPrivateChannel.bind("pusher:subscription_error", (error) =>
+      console.log(error)
+    );
   }
 
   renderLoginScreen() {
@@ -181,8 +180,8 @@ class App extends Component {
         channel={this.state.channel}
         title={TITLE}
         handleLogout={() => this.handleLogout()}
-        drawerItems={users}
-        handleDrawerItemClick={() => this.handleDrawerItemClick()}
+        handleDrawerItemClick={(e) => this.handleDrawerItemClick(e)}
+        privateChannels={this.state.privateChannels}
       ></ChatScreen>
     );
   }

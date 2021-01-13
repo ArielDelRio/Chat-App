@@ -2,23 +2,16 @@ import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import {
-  Box,
   FilledInput,
   FormControl,
   IconButton,
-  Input,
   InputAdornment,
   InputLabel,
-  TextField,
 } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 
-const drawerWidth = 240;
-
 const useStyles = makeStyles((theme) => ({
   form_control: {
-    // position: "fixed",
-    // bottom: "10px",
     marginTop: "10px",
   },
   send_button: {
@@ -34,7 +27,7 @@ const SendMessageForm = ({ user, channel }) => {
   useEffect(() => {
     if (isTyping) {
       setTimeout(() => {
-        channel.trigger("client-stop-typing", user.id);
+        channel.trigger("client-stop-typing", { id: user.id });
         setisTyping(false);
       }, 1000);
     }
@@ -42,8 +35,8 @@ const SendMessageForm = ({ user, channel }) => {
 
   const handleTypingMessage = (messageTyped) => {
     if (messageTyped.length > message.length && !isTyping) {
+      channel.trigger("client-typing", { id: user.id });
       setisTyping(true);
-      channel.trigger("client-typing", user.id);
     }
     setmessage(messageTyped);
   };

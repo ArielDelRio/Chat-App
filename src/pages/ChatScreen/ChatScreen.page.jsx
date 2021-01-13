@@ -6,24 +6,45 @@ import Info from "../../components/Info.component";
 import MessageList from "../../components/MessageList.component";
 import useStyles from "../ChatScreen/ChatScreen.style";
 import SendMessageForm from "../../components/SendMessageForm.component";
-import { Box } from "@material-ui/core";
+import { Box, Chip } from "@material-ui/core";
 
 const ChatScreen = ({
   title,
   channel,
   handleLogout,
   handleDrawerItemClick,
+  privateChannels,
 }) => {
   const classes = useStyles();
 
   const [openInfo, setOpenInfo] = useState({ open: false, message: "" });
 
-  const [chatInfo, setchatInfo] = useState({
+  // const [chatInfo, setchatInfo] = useState({
+  //   user: channel.members.me,
+  //   members: channel.members.members,
+  //   count: channel.members.count,
+  //   messages: [],
+  //   privateChats: privateChannels,
+  //   channelSelected: channel,
+  // });
+
+  const [channelSelected2, setChannelSelected] = useState({
     user: channel.members.me,
     members: channel.members.members,
     count: channel.members.count,
     messages: [],
   });
+
+  const [chatInfo, setchatInfo] = useState([
+    {
+      name: channel.name,
+      user: channel.members.me,
+      members: channel.members.members,
+      count: channel.members.count,
+      messages: [],
+      selected: true,
+    },
+  ]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
@@ -48,11 +69,11 @@ const ChatScreen = ({
   const event_get_message = (event_data) => {
     console.log("message_added");
 
-    setchatInfo((chatInfo) => ({
-      ...chatInfo,
-      count: chatInfo.count,
+    setChannelSelected((channelSelected) => ({
+      ...channelSelected,
+      count: channelSelected.count,
       messages: [
-        ...chatInfo.messages,
+        ...channelSelected.messages,
         { senderId: event_data.senderId, text: event_data.text },
       ],
     }));
@@ -60,19 +81,23 @@ const ChatScreen = ({
 
   const event_typing_event = (event_data) => {
     console.log("start typing");
-    setchatInfo((chatInfo) => {
-      const members = { ...chatInfo.members };
-      if (members[event_data]) members[event_data].typing = true;
-      return { ...chatInfo, members };
+    const userId = event_data.id;
+
+    setChannelSelected((channelSelected) => {
+      const members = { ...channelSelected.members };
+      if (members[userId]) members[userId].typing = true;
+      return { ...channelSelected, members };
     });
   };
 
   const event_stop_typing_event = (event_data) => {
     console.log("stop typing");
-    setchatInfo((chatInfo) => {
-      const members = { ...chatInfo.members };
-      if (members[event_data]) members[event_data].typing = false;
-      return { ...chatInfo, members };
+    const userId = event_data.id;
+
+    setChannelSelected((channelSelected) => {
+      const members = { ...channelSelected.members };
+      if (members[userId]) members[userId].typing = false;
+      return { ...channelSelected, members };
     });
   };
 
@@ -84,11 +109,20 @@ const ChatScreen = ({
       open: true,
       message: `User ${member.info.name} joined`,
     });
-    setchatInfo((chatInfo) => ({
-      ...chatInfo,
-      count: chatInfo.count + 1,
-      members: { ...chatInfo.members, ...newMember },
-    }));
+
+    setchatInfo((chatInfo) => {
+      const presenceMainChannel = chatInfo.find(
+        (channel) => channel.name === "presence-main"
+      );
+
+      presenceMainChannel.count = presenceMainChannel.count + 1;
+      presenceMainChannel.members = {
+        ...presenceMainChannel.members,
+        ...newMember,
+      };
+
+      return chatInfo;
+    });
   };
 
   const event_pusher_member_removed = (member) => {
@@ -99,28 +133,28 @@ const ChatScreen = ({
       message: `User ${member.info.name} left`,
     });
 
-    setchatInfo((chatInfo) => {
-      const updatedMembers = { ...chatInfo.members };
+    setChannelSelected((channelSelected) => {
+      const updatedMembers = { ...channelSelected.members };
 
       delete updatedMembers[member.id];
 
       return {
-        ...chatInfo,
-        count: chatInfo.count - 1,
+        ...channelSelected,
+        count: channelSelected.count - 1,
         members: updatedMembers,
       };
     });
   };
 
   useEffect(() => {
-    //bind_global_event();
+    // bind_global_event();
 
     const events = [
-      { name: "get-message", func: event_get_message },
-      { name: "client-typing", func: event_typing_event },
-      { name: "client-stop-typing", func: event_stop_typing_event },
+      // { name: "get-message", func: event_get_message },
+      // { name: "client-typing", func: event_typing_event },
+      // { name: "client-stop-typing", func: event_stop_typing_event },
       { name: "pusher:member_added", func: event_pusher_member_added },
-      { name: "pusher:member_removed", func: event_pusher_member_removed },
+      // { name: "pusher:member_removed", func: event_pusher_member_removed },
     ];
 
     events.forEach((event) => {
@@ -128,13 +162,19 @@ const ChatScreen = ({
     });
   }, []);
 
+  useEffect(() => {
+    console.log("private channel change");
+  }, [privateChannels]);
+
+  const channelSelected = chatInfo.find((chat) => chat.selected === true);
+
   console.log(chatInfo);
   return (
     <React.Fragment>
       <Header
         title={title}
         handleLogout={handleLogout}
-        drawerItems={chatInfo.members}
+        drawerItems={channelSelected.members}
         handleDrawerItemClick={handleDrawerItemClick}
         handleDrawerToggle={handleDrawerToggle}
         isDrawerOpen={isDrawerOpen}
@@ -151,13 +191,26 @@ const ChatScreen = ({
           setOpenInfo={setOpenInfo}
         />
 
+        <Box display="flex" justifyContent="center" pb={2}>
+          {Object.values(channelSelected.members).map((member) =>
+            member.typing ? (
+              <Chip
+                key={member.user_id}
+                color="primary"
+                size="small"
+                label={member.name + " is typing..."}
+              />
+            ) : null
+          )}
+        </Box>
+
         <MessageList
-          messages={chatInfo.messages}
-          members={chatInfo.members}
-          user={chatInfo.user}
+          messages={channelSelected.messages}
+          members={channelSelected.members}
+          user={channelSelected.user}
         />
 
-        <SendMessageForm user={chatInfo.user} channel={channel} />
+        <SendMessageForm user={channelSelected.user} channel={channel} />
       </Box>
     </React.Fragment>
   );

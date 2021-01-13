@@ -16,7 +16,7 @@ export default function Info({ message, open, setOpenInfo }) {
     <div>
       <Snackbar
         className={classes.snackbar}
-        anchorOrigin={{ horizontal: "center", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "top" }}
         autoHideDuration={3000}
         onClose={() => setOpenInfo(false)}
         open={open}
