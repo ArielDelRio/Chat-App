@@ -7,10 +7,12 @@ import {
   Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import React from "react";
+import React, { useRef, useEffect } from "react";
 
 const useStyles = makeStyles((theme) => ({
-  message: {},
+  container: {
+    paddingBottom: "5vh",
+  },
   usersMsg: {
     display: "flex",
     justifyContent: "flex-start",
@@ -43,15 +45,23 @@ const useStyles = makeStyles((theme) => ({
 
 const MessageList = ({ messages, members, user }) => {
   const classes = useStyles();
-  // console.log(user, messages, members);
+
+  const myRef = useRef(null)
+
+  useEffect(() => {
+    if(messages.length > 0 && myRef.current)
+      window.scrollTo(0, myRef.current.offsetTop);
+  }, [messages])
+
   return (
-    <div>
+    <div className={classes.container}>
       {messages.map((message, index) => {
         const isUserMsg = message.senderId === user.id;
         return (
           <Box pb={0.5} key={index}>
             <Box className={isUserMsg ? classes.myMsg : classes.usersMsg}>
               <Card
+                ref={myRef}
                 elevation={3}
                 variant="outlined"
                 classes={{

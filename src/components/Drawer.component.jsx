@@ -19,6 +19,8 @@ const useStyles = makeStyles((theme) => {
 const TemporaryDrawer = ({
   listItems,
   isDrawerOpen,
+  user,
+  indexChannelSelected,
   handleDrawerToggle,
   handleDrawerItemClick,
 }) => {
@@ -41,7 +43,9 @@ const TemporaryDrawer = ({
             onKeyDown={smScreen ? handleDrawerToggle : null}
           >
             <UsersList
+              user={user}
               listItems={listItems}
+              indexChannelSelected={indexChannelSelected}
               handleItemClick={handleDrawerItemClick}
             />
           </div>

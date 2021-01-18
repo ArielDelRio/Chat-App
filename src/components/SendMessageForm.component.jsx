@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
 import {
@@ -10,16 +11,37 @@ import {
 } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
 
+const drawerWidth = 250;
+
 const useStyles = makeStyles((theme) => ({
   form_control: {
     marginTop: "10px",
+    position: "fixed",
+    bottom: 0,
+    right: 0,
+    width: "100%",
+
+    background: "white",
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
   },
+  contentShift: {
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+
+
   send_button: {
     marginBottom: "15px",
   },
 }));
 
-const SendMessageForm = ({ user, channel }) => {
+const SendMessageForm = ({ user, channel, isDrawerOpen }) => {
   const classes = useStyles();
   const [message, setmessage] = useState("");
   const [isTyping, setisTyping] = useState(false);
@@ -27,7 +49,10 @@ const SendMessageForm = ({ user, channel }) => {
   useEffect(() => {
     if (isTyping) {
       setTimeout(() => {
-        channel.trigger("client-stop-typing", { id: user.id });
+        channel.trigger("client-stop-typing", {
+          id: user.id,
+          channelName: channel.name,
+        });
         setisTyping(false);
       }, 1000);
     }
@@ -35,7 +60,10 @@ const SendMessageForm = ({ user, channel }) => {
 
   const handleTypingMessage = (messageTyped) => {
     if (messageTyped.length > message.length && !isTyping) {
-      channel.trigger("client-typing", { id: user.id });
+      channel.trigger("client-typing", {
+        id: user.id,
+        channelName: channel.name,
+      });
       setisTyping(true);
     }
     setmessage(messageTyped);
@@ -47,9 +75,10 @@ const SendMessageForm = ({ user, channel }) => {
     if (message.trim() === "") return;
 
     axios
-      .post("http://localhost:3001/send-message", {
+      .post("./send-message", {
         senderId: user.id,
         text: message,
+        channel_name: channel.name,
       })
       .then((res) => {
         setmessage("");
@@ -58,16 +87,18 @@ const SendMessageForm = ({ user, channel }) => {
       .catch((err) => {
         setmessage("");
         setisTyping(false);
-        console.log(err);
       });
   };
 
   return (
     <form
+      className={clsx(classes.form_control, {
+        [classes.contentShift]: isDrawerOpen,
+      })}
       onSubmit={(e) => handleSendMessage(e)}
       noValidate
       autoComplete="off"
-      className={classes.form_control}
+      // className={classes.form_control}
     >
       <FormControl fullWidth variant="filled">
         <InputLabel htmlFor="message-input">Send a message</InputLabel>

@@ -56,6 +56,8 @@ const Header = ({
   title,
   drawerItems,
   isDrawerOpen,
+  user,
+  indexChannelSelected,
   handleLogout,
   handleDrawerItemClick,
   handleDrawerToggle,
@@ -105,6 +107,8 @@ const Header = ({
         handleDrawerToggle={(event) => handleDrawerToggle(event)}
         listItems={drawerItems}
         handleDrawerItemClick={handleDrawerItemClick}
+        indexChannelSelected={indexChannelSelected}
+        user={user}
       />
     </div>
   );

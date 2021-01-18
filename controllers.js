@@ -52,7 +52,7 @@ module.exports.getChannel = async (req, res) => {
 module.exports.send_message = (req, res) => {
   const payload = req.body;
   pusher
-    .trigger("presence-main", "get-message", payload)
+    .trigger(payload.channel_name, "get-message", payload)
     .then((response) => {
       console.log(response);
       res.json(response);

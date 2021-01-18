@@ -1,15 +1,13 @@
 import React from "react";
 
 import {
-  Avatar,
   Checkbox,
   Container,
   Divider,
   FormControlLabel,
-  Typography,
   Card,
+  CardMedia,
 } from "@material-ui/core";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 
 import useStyles from "./LoginForm.style";
 
@@ -17,23 +15,28 @@ const LoginForm = ({ children, isSignedIn, handleChangeIsSignedIn }) => {
   const classes = useStyles();
 
   return (
-    <Container component="main" maxWidth="xs" className={classes.root}>
-      <Card variant="outlined" className={classes.card}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h4">
-          Chat App
-        </Typography>
-        <Divider />
-        <div className={classes.submit}>{children}</div>
-        <FormControlLabel
-          onChange={() => handleChangeIsSignedIn()}
-          control={<Checkbox value="remember" color="primary" />}
-          label="Remember me"
-        />
-      </Card>
-    </Container>
+    <div className={classes.wrapper}>
+      <Container component="main" maxWidth="xs" className={classes.root}>
+        <Card variant="elevation" className={classes.card}>
+          <CardMedia
+            className={classes.media}
+            component="img"
+            alt="Chat-App Logo"
+            // height="200"
+            // width="200"
+            image="logo2.png"
+            title="Chat-App"
+          />
+          <Divider />
+          <div className={classes.submit}>{children}</div>
+          <FormControlLabel
+            onChange={() => handleChangeIsSignedIn()}
+            control={<Checkbox value="remember" color="primary" />}
+            label="Remember me"
+          />
+        </Card>
+      </Container>
+    </div>
   );
 };
 
