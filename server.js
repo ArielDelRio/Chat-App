@@ -34,8 +34,9 @@ app.get("/channels/", getChannels);
 
 app.get("/test", test);
 
+app.use(express.static('build'));
 // Live Server
-const PORT = 3001;
+const PORT = 3000;
 app.listen(PORT, (err) => {
   if (err) {
     console.error(err);
