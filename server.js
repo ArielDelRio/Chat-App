@@ -37,7 +37,7 @@ app.get("/test", test);
 app.use(express.static('build'));
 // Live Server
 const PORT = 3000;
-app.listen(PORT, (err) => {
+app.listen(process.env.PORT || PORT, (err) => {
   if (err) {
     console.error(err);
   } else {
