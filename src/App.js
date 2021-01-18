@@ -15,7 +15,7 @@ import { DOMAIN } from './config';
 const PUSHER_CONFIG = {
   public_key: "664c0cde38c2cec0cdc9",
   cluster: "us2",
-  authEndpoint: `${DOMAIN.local}/pusher/auth`,
+  authEndpoint: `./pusher/auth`,
   main_channel: "presence-main",
 };
 
