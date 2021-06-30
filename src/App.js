@@ -10,14 +10,7 @@ import ChatScreen from "./pages/ChatScreen/ChatScreen.page";
 import LoginForm from "./pages/LoginForm/LoginForm.page";
 import { LinearProgress } from "@material-ui/core";
 
-import { DOMAIN } from './config';
-
-const PUSHER_CONFIG = {
-  public_key: "664c0cde38c2cec0cdc9",
-  cluster: "us2",
-  authEndpoint: `./pusher/auth`,
-  main_channel: "presence-main",
-};
+import { DOMAIN, PUSHER_CONFIG } from './config';
 
 const TITLE = "Chat-App";
 
@@ -102,13 +95,9 @@ class App extends Component {
     });
   }
 
-  handleChangeIsSignedIn() {
-    this.setState({ isSignedIn: !this.state.isSignedIn });
-  }
-
-  renderLoginScreen() {
-    return (
-      <LoginForm handleChangeIsSignedIn={() => this.handleChangeIsSignedIn()}>
+  render() {
+    return !this.state.login ? (
+      <LoginForm handleChangeIsSignedIn={() => this.setState({ isSignedIn: !this.state.isSignedIn })}>
         <Login
           handleLogin={(response) => this.handleLogin(response)}
           handleErrorOnAuth={(response) => this.handleErrorOnAuth(response)}
@@ -116,12 +105,6 @@ class App extends Component {
         />
         {this.state.loading ? <LinearProgress /> : null}
       </LoginForm>
-    )
-  }
-
-  render() {
-    return !this.state.login ? (
-      this.renderLoginScreen()
     ) : (
         <ChatScreen
           pusher={this.pusher}

@@ -6,3 +6,10 @@ export const DOMAIN = {
   local: "http://localhost:3000",
   ip: "http://192.168.42.54:3000",
 };
+
+export const PUSHER_CONFIG = {
+  public_key: "664c0cde38c2cec0cdc9",
+  cluster: "us2",
+  authEndpoint: `./pusher/auth`,
+  main_channel: "presence-main",
+};
