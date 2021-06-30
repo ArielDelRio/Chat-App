@@ -1,14 +1,11 @@
 import React from "react";
-import GoogleLogin from "react-google-login";
-import { GoogleLogout } from "react-google-login";
+import { GOOGLE_CLIENT_ID } from '../config';
+import { GoogleLogin, GoogleLogout  } from "react-google-login";
 
 export const Login = ({ handleLogin, handleErrorOnAuth, isSignedIn }) => {
   return (
     <GoogleLogin
-      clientId="325689536941-3epu1qj2a2tkhb73v1g5bgh58dhtjckj.apps.googleusercontent.com"
-      // render={renderProps => (
-      //     <button onClick={renderProps.onClick} disabled={renderProps.disabled}>This is my custom Google button</button>
-      //   )}
+      clientId = { GOOGLE_CLIENT_ID }
       isSignedIn={isSignedIn}
       onSuccess={(response) => handleLogin(response)}
       onFailure={(response) => handleErrorOnAuth(response)}
@@ -19,7 +16,7 @@ export const Login = ({ handleLogin, handleErrorOnAuth, isSignedIn }) => {
 
 export const Logout = ({ handleLogout, handleErrorOnAuth, render }) => (
   <GoogleLogout
-    clientId="325689536941-3epu1qj2a2tkhb73v1g5bgh58dhtjckj.apps.googleusercontent.com"
+    clientId= { GOOGLE_CLIENT_ID }
     buttonText="Logout"
     render={render}
     onLogoutSuccess={(response) => handleLogout(response)}
