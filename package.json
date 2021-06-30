@@ -21,7 +21,8 @@
     "concurrently": "^3.5.1"
   },
   "scripts": {
-    "start": "nodemon ./server.js",
+    "start": "npm run build && nodemon ./server.js",
+    "serve": "nodemon ./server.js",
     "start:dev": "concurrently \"nodemon ./server.js\" \"react-scripts start\"",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
