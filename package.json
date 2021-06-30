@@ -27,5 +27,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "volta": {
+    "node": "14.17.1",
+    "npm": "7.19.0"
   }
 }
