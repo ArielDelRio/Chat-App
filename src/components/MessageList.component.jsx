@@ -12,23 +12,28 @@ import React, { useRef, useEffect } from "react";
 const useStyles = makeStyles((theme) => ({
   container: {
     paddingBottom: "5vh",
+    margin: "auto 4vw",
   },
   usersMsg: {
     display: "flex",
     justifyContent: "flex-start",
     paddingRight: "20px",
+    borderRadius: "1.2rem 1.2rem 1.2rem 0",
   },
   myMsg: {
     display: "flex",
     justifyContent: "flex-end",
     paddingLeft: "20px",
+    borderRadius: "1.2rem 1.2rem 0 1.2rem",
   },
   msg: {
-    borderRadius: "1.2em",
+    borderRadius: "inherit",
     maxWidth: 562,
+    fontSize: "1.3rem",
     overflowWrap: "break-word",
     [theme.breakpoints.down("sm")]: {
       maxWidth: 345,
+      fontSize: "1rem",
     },
   },
 
@@ -46,12 +51,12 @@ const useStyles = makeStyles((theme) => ({
 const MessageList = ({ messages, members, user }) => {
   const classes = useStyles();
 
-  const myRef = useRef(null)
+  const myRef = useRef(null);
 
   useEffect(() => {
-    if(messages.length > 0 && myRef.current)
+    if (messages.length > 0 && myRef.current)
       window.scrollTo(0, myRef.current.offsetTop);
-  }, [messages])
+  }, [messages]);
 
   return (
     <div className={classes.container}>
@@ -87,9 +92,7 @@ const MessageList = ({ messages, members, user }) => {
                   />
                 )}
                 <CardContent classes={{ root: classes.msgContent }}>
-                  <Typography variant="body2" color="textPrimary" component="p">
-                    {message.text}
-                  </Typography>
+                  <p>{message.text}</p>
                 </CardContent>
               </Card>
             </Box>
