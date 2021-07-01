@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
 
-
   send_button: {
     marginBottom: "15px",
   },
@@ -45,6 +44,8 @@ const SendMessageForm = ({ user, channel, isDrawerOpen }) => {
   const classes = useStyles();
   const [message, setmessage] = useState("");
   const [isTyping, setisTyping] = useState(false);
+
+  const inputRef = React.useRef();
 
   useEffect(() => {
     if (isTyping) {
@@ -88,6 +89,8 @@ const SendMessageForm = ({ user, channel, isDrawerOpen }) => {
         setmessage("");
         setisTyping(false);
       });
+
+    inputRef.current.focus();
   };
 
   return (
@@ -103,6 +106,7 @@ const SendMessageForm = ({ user, channel, isDrawerOpen }) => {
       <FormControl fullWidth variant="filled">
         <InputLabel htmlFor="message-input">Send a message</InputLabel>
         <FilledInput
+          inputRef={inputRef}
           id="message-input"
           multiline
           color="primary"
