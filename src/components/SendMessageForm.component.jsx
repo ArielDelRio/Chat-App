@@ -93,6 +93,17 @@ const SendMessageForm = ({ user, channel, isDrawerOpen }) => {
     inputRef.current.focus();
   };
 
+  const handleKeyPress = (event) => {
+    if (event.keyCode === 13 && event.altKey) {
+      setmessage(message + "\n");
+      return;
+    }
+
+    if (event.keyCode === 13) {
+      handleSendMessage(event);
+    }
+  };
+
   return (
     <form
       className={clsx(classes.form_control, {
@@ -113,6 +124,7 @@ const SendMessageForm = ({ user, channel, isDrawerOpen }) => {
           type="text"
           value={message}
           onChange={(e) => handleTypingMessage(e.target.value)}
+          onKeyDown={handleKeyPress}
           endAdornment={
             <InputAdornment position="end">
               <IconButton
