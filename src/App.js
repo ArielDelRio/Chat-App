@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Pusher from "pusher-js";
+import { CSSTransition } from "react-transition-group";
 
 import { TOKEN_SIGNED_IN } from "./config";
 
@@ -10,7 +11,7 @@ import ChatScreen from "./pages/ChatScreen/ChatScreen.page";
 import LoginForm from "./pages/LoginForm/LoginForm.page";
 import { LinearProgress } from "@material-ui/core";
 
-import { DOMAIN, PUSHER_CONFIG } from './config';
+import { PUSHER_CONFIG } from "./config";
 
 const TITLE = "Chat-App";
 
@@ -97,7 +98,11 @@ class App extends Component {
 
   render() {
     return !this.state.login ? (
-      <LoginForm handleChangeIsSignedIn={() => this.setState({ isSignedIn: !this.state.isSignedIn })}>
+      <LoginForm
+        handleChangeIsSignedIn={() =>
+          this.setState({ isSignedIn: !this.state.isSignedIn })
+        }
+      >
         <Login
           handleLogin={(response) => this.handleLogin(response)}
           handleErrorOnAuth={(response) => this.handleErrorOnAuth(response)}
@@ -106,14 +111,14 @@ class App extends Component {
         {this.state.loading ? <LinearProgress /> : null}
       </LoginForm>
     ) : (
-        <ChatScreen
-          pusher={this.pusher}
-          channel={this.state.channel}
-          title={TITLE}
-          handleLogout={() => this.handleLogout()}
-          privateChannels={this.state.privateChannels}
-        ></ChatScreen>
-      );
+      <ChatScreen
+        pusher={this.pusher}
+        channel={this.state.channel}
+        title={TITLE}
+        handleLogout={() => this.handleLogout()}
+        privateChannels={this.state.privateChannels}
+      ></ChatScreen>
+    );
   }
 }
 

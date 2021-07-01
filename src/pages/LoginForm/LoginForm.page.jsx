@@ -17,7 +17,10 @@ const LoginForm = ({ children, isSignedIn, handleChangeIsSignedIn }) => {
   return (
     <div className={classes.wrapper}>
       <Container component="main" maxWidth="xs" className={classes.root}>
-        <Card variant="elevation" className={classes.card}>
+        <Card
+          variant="elevation"
+          className={`${classes.card} animate__animated animate__zoomIn`}
+        >
           <CardMedia
             className={classes.media}
             component="img"
