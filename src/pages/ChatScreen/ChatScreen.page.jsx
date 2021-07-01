@@ -6,10 +6,7 @@ import Info from "../../components/Info.component";
 import MessageList from "../../components/MessageList.component";
 import useStyles from "../ChatScreen/ChatScreen.style";
 import SendMessageForm from "../../components/SendMessageForm.component";
-import {
-  Box,
-  Chip,
-} from "@material-ui/core";
+import { Box, Chip } from "@material-ui/core";
 import { getPrivateChannelName } from "../../utils";
 
 const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
@@ -133,7 +130,6 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
   };
 
   const event_pusher_member_removed = (member) => {
-
     setOpenInfo({
       open: true,
       message: `User ${member.info.name} left`,
@@ -241,9 +237,7 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
       });
     });
 
-    newPrivateChannel.bind("pusher:subscription_error", (error) =>
-      error
-    );
+    newPrivateChannel.bind("pusher:subscription_error", (error) => error);
   };
 
   useEffect(() => {
@@ -318,7 +312,7 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
             setOpenInfo={setOpenInfo}
           />
 
-          <Box display="flex" justifyContent="center" pb={2}>
+          <Box className={classes.typingNotificaton}>
             {Object.values(
               chatInfo.channels[chatInfo.indexChannelSelected].members
             ).map((member) =>
