@@ -64,7 +64,13 @@ const MessageList = ({ messages, members, user }) => {
         const isUserMsg = message.senderId === user.id;
         return (
           <Box pb={0.5} key={index}>
-            <Box className={isUserMsg ? classes.myMsg : classes.usersMsg}>
+            <Box
+              className={
+                isUserMsg
+                  ? `${classes.myMsg} animate__animated animate__fadeInRight animate__faster`
+                  : `${classes.usersMsg} animate__animated animate__fadeInLeft animate__faster`
+              }
+            >
               <Card
                 ref={myRef}
                 elevation={3}
