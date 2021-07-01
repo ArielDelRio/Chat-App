@@ -67,7 +67,7 @@ const MessageList = ({ messages, members, user }) => {
             <Box
               className={
                 isUserMsg
-                  ? `${classes.myMsg} animate__animated animate__fadeInRight animate__faster`
+                  ? `${classes.myMsg} animate__animated animate__fadeZoomIn animate__faster`
                   : `${classes.usersMsg} animate__animated animate__fadeInLeft animate__faster`
               }
             >
