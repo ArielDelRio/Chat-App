@@ -8,4 +8,5 @@ yarn-error.log*
 
 build/
 
-.env
+.env/
+.vscode/
