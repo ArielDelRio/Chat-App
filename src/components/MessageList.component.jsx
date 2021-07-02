@@ -1,13 +1,7 @@
-import {
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Typography,
-} from "@material-ui/core";
+import { Avatar, Box, Card, CardContent, CardHeader } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useRef, useEffect } from "react";
+import InfoMessage from "./InfoMessage.component";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -42,9 +36,17 @@ const useStyles = makeStyles((theme) => ({
   },
   msgContent: {
     padding: "10px",
+    display: "flex",
+    wordBreak: "break-word",
     "&:last-child": {
       paddingBottom: "10px",
     },
+  },
+
+  infoMessage: {
+    display: "flex",
+    alignSelf: "flex-end",
+    paddingLeft: ".2em",
   },
 }));
 
@@ -99,6 +101,9 @@ const MessageList = ({ messages, members, user }) => {
                 )}
                 <CardContent classes={{ root: classes.msgContent }}>
                   <p>{message.text}</p>
+                  <div className={classes.infoMessage}>
+                    <InfoMessage />
+                  </div>
                 </CardContent>
               </Card>
             </Box>

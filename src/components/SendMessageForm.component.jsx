@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
-import axios from "axios";
 import {
   FilledInput,
   FormControl,
@@ -40,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SendMessageForm = ({ user, channel, isDrawerOpen }) => {
+const SendMessageForm = ({ user, channel, isDrawerOpen, addNewMessage }) => {
   const classes = useStyles();
   const [message, setmessage] = useState("");
   const [isTyping, setisTyping] = useState(false);
@@ -75,20 +74,25 @@ const SendMessageForm = ({ user, channel, isDrawerOpen }) => {
 
     if (message.trim() === "") return;
 
-    axios
-      .post("./send-message", {
-        senderId: user.id,
-        text: message,
-        channel_name: channel.name,
-      })
-      .then((res) => {
-        setmessage("");
-        setisTyping(false);
-      })
-      .catch((err) => {
-        setmessage("");
-        setisTyping(false);
-      });
+    addNewMessage(user.id, message, channel.name);
+
+    setmessage("");
+    setisTyping(false);
+
+    // axios
+    //   .post("./send-message", {
+    //     senderId: user.id,
+    //     text: message,
+    //     channel_name: channel.name,
+    //   })
+    //   .then((res) => {
+    //     setmessage("");
+    //     setisTyping(false);
+    //   })
+    //   .catch((err) => {
+    //     setmessage("");
+    //     setisTyping(false);
+    //   });
 
     inputRef.current.focus();
   };
@@ -123,6 +127,7 @@ const SendMessageForm = ({ user, channel, isDrawerOpen }) => {
           color="primary"
           type="text"
           value={message}
+          autoFocus
           onChange={(e) => handleTypingMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           endAdornment={

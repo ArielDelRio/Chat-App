@@ -8,6 +8,7 @@ import useStyles from "../ChatScreen/ChatScreen.style";
 import SendMessageForm from "../../components/SendMessageForm.component";
 import { Box, Chip } from "@material-ui/core";
 import { getPrivateChannelName } from "../../utils";
+import axios from "axios";
 
 const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
   const classes = useStyles();
@@ -42,13 +43,6 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
     }
 
     setIsDrawerOpen(!isDrawerOpen);
-  };
-
-  const bind_global_event = () => {
-    channel.bind_global((eventname, data) => {
-      console.log(`Event name: ${eventname}`);
-      console.log(`Event data: ${data}`);
-    });
   };
 
   const event_get_message = (event_data) => {
@@ -240,6 +234,33 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
     newPrivateChannel.bind("pusher:subscription_error", (error) => error);
   };
 
+  const addNewMessage = (senderId, message, channelName) => {
+    setchatInfo((chatInfo) => {
+      const channelSelected = chatInfo.channels[chatInfo.indexChannelSelected];
+
+      const newMessage = {
+        senderId: senderId,
+        text: message,
+        viewed: true,
+      };
+
+      axios
+        .post("./send-message", {
+          senderId: senderId,
+          text: message,
+          channel_name: channelName,
+        })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {});
+
+      channelSelected.messages = [...channelSelected.messages, newMessage];
+
+      return { ...chatInfo };
+    });
+  };
+
   useEffect(() => {
     // bind_global_event();
 
@@ -322,6 +343,7 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
             user={chatInfo.user}
             channel={chatInfo.channels[chatInfo.indexChannelSelected].channel}
             isDrawerOpen={isDrawerOpen}
+            addNewMessage={addNewMessage}
           />
         </div>
       </Box>

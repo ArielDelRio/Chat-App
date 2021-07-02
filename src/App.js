@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Pusher from "pusher-js";
-import { CSSTransition } from "react-transition-group";
 
 import { TOKEN_SIGNED_IN } from "./config";
 
