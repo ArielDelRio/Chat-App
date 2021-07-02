@@ -46,25 +46,57 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
   };
 
   const event_get_message = (event_data) => {
+    const newMessage = {
+      senderId: event_data.senderId,
+      message_id: event_data.message_id,
+      text: event_data.text,
+      status: "DELIVERED",
+    };
+
     const indexChannelToGetMessage = chatInfo.channels.findIndex((channel) => {
       return channel.channel.name === event_data.channel_name;
     });
 
-    setchatInfo((chatInfo) => {
-      const channelSelected = chatInfo.channels[indexChannelToGetMessage];
-      const newMessage = {
-        senderId: event_data.senderId,
-        text: event_data.text,
-        viewed: false,
-      };
+    const channelSelected = chatInfo.channels[indexChannelToGetMessage];
 
-      if (indexChannelToGetMessage === chatInfo.indexChannelSelected) {
-        channelSelected.messages.forEach((message) => (message.viewed = true));
-        newMessage.viewed = true;
+    setchatInfo((chatInfo) => {
+      if (event_data.senderId !== chatInfo.user.id) {
+        if (indexChannelToGetMessage === chatInfo.indexChannelSelected) {
+          channelSelected.messages.forEach(
+            (message) => (message.status = "VIEWED")
+          );
+          newMessage.status = "VIEWED";
+
+          channel.trigger("client-message-viewed", {
+            channel_name: channelSelected.channel.name,
+          });
+        }
+
+        channelSelected.messages = [...channelSelected.messages, newMessage];
+      } else {
+        channelSelected.messages[channelSelected.messages.length - 1].status =
+          "DELIVERED";
       }
 
-      channelSelected.messages = [...channelSelected.messages, newMessage];
+      return { ...chatInfo };
+    });
+  };
 
+  const event_message_viewed_event = (event_data) => {
+    setchatInfo((chatInfo) => {
+      const indexChannelToGetMessage = chatInfo.channels.findIndex(
+        (channel) => {
+          return channel.channel.name === event_data.channel_name;
+        }
+      );
+      console.log(`Index channel found ${indexChannelToGetMessage}`);
+
+      const channelSelected = chatInfo.channels[indexChannelToGetMessage];
+
+      console.log(chatInfo.user.id);
+      channelSelected.messages
+        .filter((message) => message.senderId !== chatInfo.user.id)
+        .forEach((message) => (message.status = "VIEWED"));
       return { ...chatInfo };
     });
   };
@@ -159,9 +191,9 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
     if (!itemData.user_id) {
       if (chatInfo.indexChannelSelected !== 0) {
         setchatInfo((chatInfo) => {
-          chatInfo.channels[0].messages.forEach(
-            (message) => (message.viewed = true)
-          );
+          // chatInfo.channels[0].messages.forEach(
+          //   (message) => (message.status = "VIEWED")
+          // );
           chatInfo.indexChannelSelected = 0;
           return { ...chatInfo };
         });
@@ -186,10 +218,15 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
     );
 
     if (indexExistChannel >= 0) {
+      channel.trigger("client-message-viewed", {
+        channel_name: privateChannelName,
+      });
+
       setchatInfo((chatInfo) => {
-        chatInfo.channels[indexExistChannel].messages.forEach(
-          (message) => (message.viewed = true)
-        );
+        // chatInfo.channels[indexExistChannel].messages.forEach((message) => {
+        //   if (message.senderId !== chatInfo.user.id) message.status = "VIEWED";
+        // });
+
         return {
           ...chatInfo,
           indexChannelSelected: indexExistChannel,
@@ -235,28 +272,22 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
   };
 
   const addNewMessage = (senderId, message, channelName) => {
+    const newMessage = {
+      senderId: senderId,
+      text: message,
+      channel_name: channelName,
+      status: "SENDING",
+    };
+
+    const channelSelected = chatInfo.channels[chatInfo.indexChannelSelected];
+
+    axios
+      .post("./send-message", newMessage)
+      .then((res) => {})
+      .catch((err) => {});
+
     setchatInfo((chatInfo) => {
-      const channelSelected = chatInfo.channels[chatInfo.indexChannelSelected];
-
-      const newMessage = {
-        senderId: senderId,
-        text: message,
-        viewed: true,
-      };
-
-      axios
-        .post("./send-message", {
-          senderId: senderId,
-          text: message,
-          channel_name: channelName,
-        })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {});
-
       channelSelected.messages = [...channelSelected.messages, newMessage];
-
       return { ...chatInfo };
     });
   };
@@ -283,6 +314,7 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
       { name: "get-message", func: event_get_message },
       { name: "client-typing", func: event_typing_event },
       { name: "client-stop-typing", func: event_stop_typing_event },
+      { name: "client-message-viewed", func: event_message_viewed_event },
     ];
 
     events.forEach((event) => {
@@ -293,6 +325,7 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
     });
   }, [chatInfo.channels.length]);
 
+  console.log(chatInfo.channels);
   return (
     <React.Fragment>
       <Header
