@@ -270,21 +270,6 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
         (event_data) => event.func(event_data)
       );
     });
-
-    // chatInfo.channels[chatInfo.channels.length - 1].channel.bind(
-    //   "get-message",
-    //   event_get_message
-    // );
-
-    // chatInfo.channels[chatInfo.channels.length - 1].channel.bind(
-    //   "client-typing",
-    //   event_typing_event
-    // );
-
-    // chatInfo.channels[chatInfo.channels.length - 1].channel.bind(
-    //   "client-typing",
-    //   event_typing_event
-    // );
   }, [chatInfo.channels.length]);
 
   return (
