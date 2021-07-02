@@ -64,12 +64,13 @@ const MessageList = ({ messages, members, user }) => {
     <div className={classes.container}>
       {messages.map((message, index) => {
         const isUserMsg = message.senderId === user.id;
+        const statusMsg = message.status;
         return (
           <Box pb={0.5} key={index}>
             <Box
               className={
                 isUserMsg
-                  ? `${classes.myMsg} animate__animated animate__zoomIn animate__faster`
+                  ? `${classes.myMsg} animate__animated animate__fadeIn animate__faster`
                   : `${classes.usersMsg} animate__animated animate__fadeInLeft animate__faster`
               }
             >
@@ -101,9 +102,11 @@ const MessageList = ({ messages, members, user }) => {
                 )}
                 <CardContent classes={{ root: classes.msgContent }}>
                   <p>{message.text}</p>
-                  <div className={classes.infoMessage}>
-                    <InfoMessage />
-                  </div>
+                  {isUserMsg && (
+                    <div className={classes.infoMessage}>
+                      <InfoMessage status={statusMsg} />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </Box>
