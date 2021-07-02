@@ -1,4 +1,5 @@
 const Pusher = require("pusher");
+const { v4: uuidv4 } = require("uuid");
 
 const pusher = new Pusher({
   appId: process.env.APP_ID,
@@ -51,6 +52,9 @@ module.exports.getChannel = async (req, res) => {
 // route: /send-message
 module.exports.send_message = (req, res) => {
   const payload = req.body;
+
+  payload.message_id = uuidv4();
+
   pusher
     .trigger(payload.channel_name, "get-message", payload)
     .then((response) => {
