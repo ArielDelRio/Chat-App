@@ -68,7 +68,8 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
           newMessage.status = "VIEWED";
 
           channel.trigger("client-message-viewed", {
-            channel_name: channelSelected.channel.name,
+            id: chatInfo.user.id,
+            channelName: channelSelected.channel.name,
           });
         }
 
@@ -83,19 +84,20 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
   };
 
   const event_message_viewed_event = (event_data) => {
+    const userIdViewMessages = event_data.id;
+    const channelNameFromEvent = event_data.channelName;
+
     setchatInfo((chatInfo) => {
       const indexChannelToGetMessage = chatInfo.channels.findIndex(
         (channel) => {
-          return channel.channel.name === event_data.channel_name;
+          return channel.channel.name === channelNameFromEvent;
         }
       );
-      console.log(`Index channel found ${indexChannelToGetMessage}`);
 
       const channelSelected = chatInfo.channels[indexChannelToGetMessage];
 
-      console.log(chatInfo.user.id);
       channelSelected.messages
-        .filter((message) => message.senderId !== chatInfo.user.id)
+        .filter((message) => message.senderId !== userIdViewMessages)
         .forEach((message) => (message.status = "VIEWED"));
       return { ...chatInfo };
     });
@@ -190,10 +192,14 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
     // click on presence-main channel
     if (!itemData.user_id) {
       if (chatInfo.indexChannelSelected !== 0) {
+        channel.trigger("client-message-viewed", {
+          id: chatInfo.user.id,
+          channelName: chatInfo.channels[0].channel.name,
+        });
         setchatInfo((chatInfo) => {
-          // chatInfo.channels[0].messages.forEach(
-          //   (message) => (message.status = "VIEWED")
-          // );
+          chatInfo.channels[0].messages
+            .filter((message) => message.senderId !== chatInfo.user.id)
+            .forEach((message) => (message.status = "VIEWED"));
           chatInfo.indexChannelSelected = 0;
           return { ...chatInfo };
         });
@@ -219,13 +225,14 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
 
     if (indexExistChannel >= 0) {
       channel.trigger("client-message-viewed", {
-        channel_name: privateChannelName,
+        id: chatInfo.user.id,
+        channelName: privateChannelName,
       });
 
       setchatInfo((chatInfo) => {
-        // chatInfo.channels[indexExistChannel].messages.forEach((message) => {
-        //   if (message.senderId !== chatInfo.user.id) message.status = "VIEWED";
-        // });
+        chatInfo.channels[indexExistChannel].messages
+          .filter((message) => message.senderId !== chatInfo.user.id)
+          .forEach((message) => (message.status = "VIEWED"));
 
         return {
           ...chatInfo,
