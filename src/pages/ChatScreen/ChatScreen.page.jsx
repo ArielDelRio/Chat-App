@@ -7,7 +7,7 @@ import MessageList from "../../components/MessageList.component";
 import useStyles from "../ChatScreen/ChatScreen.style";
 import SendMessageForm from "../../components/SendMessageForm.component";
 import { Box, Chip } from "@material-ui/core";
-import { getPrivateChannelName } from "../../utils";
+import { getPrivateChannelName, STATUS } from "../../utils";
 import axios from "axios";
 
 const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
@@ -50,7 +50,13 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
       senderId: event_data.senderId,
       message_id: event_data.message_id,
       text: event_data.text,
-      status: "DELIVERED",
+      status: STATUS.DELIVERED,
+      sendTime: event_data.sendTime,
+      recivedTime: new Date().toLocaleString(undefined, {
+        hour: "numeric",
+        hour12: true,
+        minute: "numeric",
+      }),
     };
 
     const indexChannelToGetMessage = chatInfo.channels.findIndex((channel) => {
@@ -75,8 +81,9 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
 
         channelSelected.messages = [...channelSelected.messages, newMessage];
       } else {
-        channelSelected.messages[channelSelected.messages.length - 1].status =
-          "DELIVERED";
+        if (channelSelected.messages.length)
+          channelSelected.messages[channelSelected.messages.length - 1].status =
+            STATUS.DELIVERED;
       }
 
       return { ...chatInfo };
@@ -98,7 +105,7 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
 
       channelSelected.messages
         .filter((message) => message.senderId !== userIdViewMessages)
-        .forEach((message) => (message.status = "VIEWED"));
+        .forEach((message) => (message.status = STATUS.VIEWED));
       return { ...chatInfo };
     });
   };
@@ -199,7 +206,7 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
         setchatInfo((chatInfo) => {
           chatInfo.channels[0].messages
             .filter((message) => message.senderId !== chatInfo.user.id)
-            .forEach((message) => (message.status = "VIEWED"));
+            .forEach((message) => (message.status = STATUS.VIEWED));
           chatInfo.indexChannelSelected = 0;
           return { ...chatInfo };
         });
@@ -232,7 +239,7 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
       setchatInfo((chatInfo) => {
         chatInfo.channels[indexExistChannel].messages
           .filter((message) => message.senderId !== chatInfo.user.id)
-          .forEach((message) => (message.status = "VIEWED"));
+          .forEach((message) => (message.status = STATUS.VIEWED));
 
         return {
           ...chatInfo,
@@ -283,7 +290,12 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
       senderId: senderId,
       text: message,
       channel_name: channelName,
-      status: "SENDING",
+      status: STATUS.SENDING,
+      sendTime: new Date().toLocaleString(undefined, {
+        hour: "numeric",
+        hour12: true,
+        minute: "numeric",
+      }),
     };
 
     const channelSelected = chatInfo.channels[chatInfo.indexChannelSelected];
@@ -332,7 +344,6 @@ const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
     });
   }, [chatInfo.channels.length]);
 
-  console.log(chatInfo.channels);
   return (
     <React.Fragment>
       <Header

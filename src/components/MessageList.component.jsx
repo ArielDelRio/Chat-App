@@ -5,7 +5,7 @@ import InfoMessage from "./InfoMessage.component";
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    paddingBottom: "5vh",
+    paddingBottom: "6vh",
     margin: "auto 4vw",
   },
   usersMsg: {
@@ -36,7 +36,6 @@ const useStyles = makeStyles((theme) => ({
   },
   msgContent: {
     padding: "10px",
-    display: "flex",
     wordBreak: "break-word",
     "&:last-child": {
       paddingBottom: "10px",
@@ -44,8 +43,7 @@ const useStyles = makeStyles((theme) => ({
   },
 
   infoMessage: {
-    display: "flex",
-    alignSelf: "flex-end",
+    textAlign: "right",
     paddingLeft: ".2em",
   },
 }));
@@ -56,8 +54,9 @@ const MessageList = ({ messages, members, user }) => {
   const myRef = useRef(null);
 
   useEffect(() => {
-    if (messages.length > 0 && myRef.current)
-      window.scrollTo(0, myRef.current.offsetTop);
+    if (messages.length > 0 && myRef.current) {
+      myRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   return (
@@ -102,11 +101,14 @@ const MessageList = ({ messages, members, user }) => {
                 )}
                 <CardContent classes={{ root: classes.msgContent }}>
                   <p>{message.text}</p>
-                  {isUserMsg && (
-                    <div className={classes.infoMessage}>
-                      <InfoMessage status={statusMsg} />
-                    </div>
-                  )}
+                  <div className={classes.infoMessage}>
+                    <InfoMessage
+                      status={statusMsg}
+                      isUserMsg={isUserMsg}
+                      sendTime={message.sendTime}
+                      recivedTime={message.recivedTime}
+                    />
+                  </div>
                 </CardContent>
               </Card>
             </Box>

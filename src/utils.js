@@ -3,3 +3,9 @@ export const getPrivateChannelName = (myId, clientId) => {
         ? `presence-${clientId}-${myId}`
         : `presence-${myId}-${clientId}`;
 }
+
+export const STATUS = {
+    SENDING: "SENDING",
+    DELIVERED: "DELIVERED",
+    VIEWED : "VIEWED",
+}

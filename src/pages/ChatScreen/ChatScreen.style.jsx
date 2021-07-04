@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     left: 0,
     right: 0,
+    zIndex: 999,
   },
 
   contentShift: {

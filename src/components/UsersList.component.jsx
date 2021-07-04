@@ -8,7 +8,7 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import Avatar from "@material-ui/core/Avatar";
 import { Badge } from "@material-ui/core";
 import ChatNewMessagesIcon from "@material-ui/icons/Chat";
-import { getPrivateChannelName } from "../utils";
+import { getPrivateChannelName, STATUS } from "../utils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,7 +33,8 @@ const UsersList = ({
   const MainChannel = () => {
     const main_channel = listItems[0];
     const newMessagesCount = main_channel.messages.filter(
-      (message) => message.status !== "VIEWED" && message.senderId !== user.id
+      (message) =>
+        message.status !== STATUS.VIEWED && message.senderId !== user.id
     ).length;
     const lastMessage =
       main_channel.messages.length > 0
@@ -82,7 +83,7 @@ const UsersList = ({
           channelItem &&
           channelItem.messages.filter(
             (message) =>
-              message.status !== "VIEWED" && message.senderId !== user.id
+              message.status !== STATUS.VIEWED && message.senderId !== user.id
           ).length;
         const lastMessage =
           channelItem && channelItem.messages.length > 0

@@ -14,7 +14,7 @@ const drawerWidth = 250;
 
 const useStyles = makeStyles((theme) => ({
   form_control: {
-    marginTop: "10px",
+    marginTop: "30px",
     position: "fixed",
     bottom: 0,
     right: 0,
@@ -78,21 +78,6 @@ const SendMessageForm = ({ user, channel, isDrawerOpen, addNewMessage }) => {
 
     setmessage("");
     setisTyping(false);
-
-    // axios
-    //   .post("./send-message", {
-    //     senderId: user.id,
-    //     text: message,
-    //     channel_name: channel.name,
-    //   })
-    //   .then((res) => {
-    //     setmessage("");
-    //     setisTyping(false);
-    //   })
-    //   .catch((err) => {
-    //     setmessage("");
-    //     setisTyping(false);
-    //   });
 
     inputRef.current.focus();
   };
