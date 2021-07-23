@@ -9,18 +9,21 @@ import {
   InputLabel,
 } from "@material-ui/core";
 import SendIcon from "@material-ui/icons/Send";
+import { themes } from "../components/ThemeContext";
 
 const drawerWidth = 250;
 
 const useStyles = makeStyles((theme) => ({
   form_control: {
-    marginTop: "30px",
+    // marginTop: "30px",
     position: "fixed",
     bottom: 0,
     right: 0,
     width: "100%",
 
-    background: "white",
+    backgroundColor:
+      theme === themes.light ? "rgba(255, 255, 255, 1)" : "rgba(0,0,0,1)",
+
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,

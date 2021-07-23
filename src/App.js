@@ -11,6 +11,7 @@ import LoginForm from "./pages/LoginForm/LoginForm.page";
 import { LinearProgress } from "@material-ui/core";
 
 import { PUSHER_CONFIG } from "./config";
+import CustomThemeProvider from "./components/ThemeContext";
 
 const TITLE = "Chat-App";
 
@@ -110,13 +111,15 @@ class App extends Component {
         {this.state.loading ? <LinearProgress /> : null}
       </LoginForm>
     ) : (
-      <ChatScreen
-        pusher={this.pusher}
-        channel={this.state.channel}
-        title={TITLE}
-        handleLogout={() => this.handleLogout()}
-        privateChannels={this.state.privateChannels}
-      ></ChatScreen>
+      <CustomThemeProvider>
+        <ChatScreen
+          pusher={this.pusher}
+          channel={this.state.channel}
+          title={TITLE}
+          handleLogout={() => this.handleLogout()}
+          privateChannels={this.state.privateChannels}
+        ></ChatScreen>
+      </CustomThemeProvider>
     );
   }
 }

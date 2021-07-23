@@ -1,19 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import clsx from "clsx";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import Badge from "@material-ui/core/Badge";
-
-import { makeStyles } from "@material-ui/core/styles";
-import { Logout } from "../components/GoogleAuth.component";
+import Tooltip from "@material-ui/core/Tooltip";
+import Switch from "@material-ui/core/Switch";
 import ExitToApp from "@material-ui/icons/ExitToApp";
+import { makeStyles } from "@material-ui/core/styles";
 
+import { Logout } from "../components/GoogleAuth.component";
 import Drawer from "./Drawer.component";
 import { STATUS } from "../utils";
+import { CustomThemeContext, themes } from "../components/ThemeContext";
 
 const drawerWidth = 240;
 
@@ -29,6 +30,12 @@ const useStyles = makeStyles((theme) => ({
   },
 
   appBar: {
+    backgroundColor:
+      theme === themes.light ? theme.palette.primary.main : "default",
+
+    color:
+      theme === themes.light ? theme.palette.primary.contrastText : "default",
+
     transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -65,6 +72,7 @@ const Header = ({
   handleDrawerToggle,
 }) => {
   const classes = useStyles();
+  const { currentTheme, setTheme } = useContext(CustomThemeContext);
 
   const newMessagesCount = drawerItems.reduce((acc, channel) => {
     acc += channel.messages.filter(
@@ -78,6 +86,7 @@ const Header = ({
     <div className={classes.root}>
       <AppBar
         position="fixed"
+        color="inherit"
         className={clsx(classes.appBar, {
           [classes.appBarShift]: isDrawerOpen,
         })}
@@ -101,17 +110,36 @@ const Header = ({
           <Typography variant="h6" className={classes.title}>
             {title}
           </Typography>
+          <Tooltip
+            title={
+              currentTheme === themes.light
+                ? "Change to Dark"
+                : "Change to Light"
+            }
+            arrow
+          >
+            <Switch
+              onChange={(e) =>
+                e.target.checked
+                  ? setTheme(themes.dark)
+                  : setTheme(themes.light)
+              }
+              name="checkedA"
+              inputProps={{ "aria-label": "secondary checkbox" }}
+            />
+          </Tooltip>
           <Logout
             handleLogout={handleLogout}
             render={(renderProps) => (
-              <Button
-                onClick={renderProps.onClick}
-                variant="outlined"
-                color="inherit"
-                endIcon={<ExitToApp />}
-              >
-                Logout
-              </Button>
+              <Tooltip title="Logout" arrow aria-label="logout">
+                <IconButton
+                  onClick={renderProps.onClick}
+                  variant="outlined"
+                  color="inherit"
+                >
+                  <ExitToApp />
+                </IconButton>
+              </Tooltip>
             )}
           />
         </Toolbar>

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
+import axios from "axios";
+import { Box, Chip } from "@material-ui/core";
 
 import Header from "../../components/Header.component";
 import Info from "../../components/Info.component";
 import MessageList from "../../components/MessageList.component";
 import useStyles from "../ChatScreen/ChatScreen.style";
 import SendMessageForm from "../../components/SendMessageForm.component";
-import { Box, Chip } from "@material-ui/core";
 import { getPrivateChannelName, STATUS } from "../../utils";
-import axios from "axios";
 
 const ChatScreen = ({ title, pusher, channel, handleLogout }) => {
   const classes = useStyles();
